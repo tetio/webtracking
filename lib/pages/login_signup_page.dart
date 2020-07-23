@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:webtracking/domain/user-info.dart';
+import 'package:webtracking/services/authentication.dart';
 
 class LoginSignupPage extends StatefulWidget {
-  LoginSignupPage(this.auth, this.loginCallback);
+  LoginSignupPage({this.auth, this.loginCallback});
 
-  final UserInfo auth;
+  final Auth auth;
   final VoidCallback loginCallback;
-  
+
   @override
   _LoginSignupPageState createState() => _LoginSignupPageState();
 }
@@ -15,8 +15,8 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
   final _formKey = new GlobalKey<FormState>();
   String _username;
   String _password;
-  bool _isLoading;
-  bool _isLoginForm;
+  bool _isLoading = false;
+  bool _isLoginForm = true;
   String _errorMessage;
 
   @override
@@ -44,9 +44,8 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
             showLogo(),
             showUsernameInput(),
             showPasswordInput(),
-            showPasswordInput(),
             showPrimaryButton(),
-            showSecondaryButton(),
+            // showSecondaryButton(),
             showErrorMessage(),
           ],
         ),
@@ -124,7 +123,7 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
       child: SizedBox(
         height: 40.0,
         child: RaisedButton(
-          onPressed: validateAndSubmit,
+          onPressed: () => validateAndSubmit(),
           elevation: 5.0,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(30.0),
@@ -139,10 +138,9 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
     );
   }
 
-  Widget showSecondaryButton() {}
 
   Widget showErrorMessage() {
-    if (_errorMessage.length > 0 && _errorMessage != null) {
+    if (_errorMessage != null && _errorMessage.length > 0) {
       return Text(
         _errorMessage,
         style: TextStyle(
@@ -168,25 +166,27 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
     return false;
   }
 
-  void validateAndSubmit() {
-    setState() {
+  void validateAndSubmit() async {
+    setState(() {
       _errorMessage = "";
       _isLoading = true;
-    }
+    });
 
     if (validateAndSave()) {
-      String userId = "";
+      String token;
       try {
         if (_isLoginForm) {
-          userId = await widget.auth.signing(_username, _password);
-        } else {
-          userId = await widget.auth.signUo(_username, _password);
+          token = await widget.auth.signIn(_username, _password);
         }
-        setState() {
+        // else {
+        //   userInfo = await widget.auth.signup(_username, _password);
+        // }
+        setState(() {
           _isLoading = false;
-        }
-        if (userId.length > 0 && userId != null && _isLoginForm) {
-          widget.loginCallback()
+        });
+
+        if (token != null && token.length > 0 && _isLoginForm) {
+          widget.loginCallback();
         }
       } catch (e) {
         print('Error $e');
