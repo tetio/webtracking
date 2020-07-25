@@ -138,7 +138,6 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
     );
   }
 
-
   Widget showErrorMessage() {
     if (_errorMessage != null && _errorMessage.length > 0) {
       return Text(
@@ -190,7 +189,9 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
         }
       } catch (e) {
         print('Error $e');
-        _isLoading = false;
+        setState(() {
+          _isLoading = false;
+        });
         _errorMessage = e.message;
         _formKey.currentState.reset();
       }

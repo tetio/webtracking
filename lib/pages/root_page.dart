@@ -39,10 +39,12 @@ class _RootPageState extends State<RootPage> {
 
   void loginCallback() {
     UserInfo userInfo = widget.auth.getCurrentUser();
-    setState(() {
-      _userInfo = userInfo;
-      authStatus = AuthStatus.LOGGED_IN;
-    });
+    if (userInfo != null) {
+      setState(() {
+        _userInfo = userInfo;
+        authStatus = AuthStatus.LOGGED_IN;
+      });
+    }
   }
 
   void logoutCallback() {
